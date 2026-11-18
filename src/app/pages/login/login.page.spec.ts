@@ -1,17 +1,29 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { EMPTY } from 'rxjs';
+import { vi } from 'vitest';
+
+import { AuthService } from '../../services/auth.service';
+
 import { LoginPage } from './login.page';
 
 describe('LoginPage', () => {
-  let component: LoginPage;
-  let fixture: ComponentFixture<LoginPage>;
-
   beforeEach(() => {
-    fixture = TestBed.createComponent(LoginPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    TestBed.configureTestingModule({
+      imports: [LoginPage],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: { observeAuthState: () => EMPTY, login: vi.fn() },
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(LoginPage);
+    fixture.detectChanges();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

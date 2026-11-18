@@ -1,17 +1,29 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { EMPTY } from 'rxjs';
+import { vi } from 'vitest';
+
+import { AuthService } from '../../services/auth.service';
+
 import { RegistroPage } from './registro.page';
 
 describe('RegistroPage', () => {
-  let component: RegistroPage;
-  let fixture: ComponentFixture<RegistroPage>;
-
   beforeEach(() => {
-    fixture = TestBed.createComponent(RegistroPage);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    TestBed.configureTestingModule({
+      imports: [RegistroPage],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: { observeAuthState: () => EMPTY, register: vi.fn() },
+        },
+      ],
+    });
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(RegistroPage);
+    fixture.detectChanges();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });
