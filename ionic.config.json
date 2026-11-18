@@ -1,0 +1,7 @@
+{
+  "name": "appChat_SuFi",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
