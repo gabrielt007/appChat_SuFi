@@ -13,6 +13,10 @@ export const environment = {
     appId: "1:180195751001:web:eb8180d57b0e47ad1f2d48",
     measurementId: "G-K82J2G7Y66"
   },
+  supabase: {
+    url: 'TU_SUPABASE_URL', 
+    anonKey: 'TU_ANON_KEY'
+  }
 };
 
 /*
