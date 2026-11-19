@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonInput, IonButton, IonList, IonItem, IonLabel, IonIcon } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { send, personCircle } from 'ionicons/icons';
@@ -10,7 +10,11 @@ import { send, personCircle } from 'ionicons/icons';
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonInput, IonButton, IonList, IonItem, IonLabel, IonIcon, CommonModule, FormsModule],
+  standalone: true,
+  imports: [
+    IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonInput, IonButton, IonList, IonItem, IonLabel, IonIcon, 
+    CommonModule, FormsModule, DatePipe
+  ],
 })
 export class Tab1Page implements OnInit, OnDestroy {
   private supabase = inject(SupabaseService);
@@ -22,16 +26,17 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({ send, personCircle });
+    console.log('0. Constructor de Tab1Page ejecutado');
   }
 
   async ngOnInit() {
-    console.log('1. Iniciando Tab1Page');
+    console.log('1. Iniciando Tab1Page (ngOnInit)');
     await this.loadMessages();
     this.subscribeToMessages();
   }
 
   async loadMessages() {
-    console.log('2. Consultando Supabase...');
+    console.log('2. Consultando mensajes a Supabase...');
     try {
       const { data, error } = await this.supabase.client
         .from('messages')
@@ -41,9 +46,8 @@ export class Tab1Page implements OnInit, OnDestroy {
       if (error) {
         console.error('Error en Supabase:', error);
       } else {
-        console.log('Mensajes obtenidos:', data);
+        console.log('3. Mensajes obtenidos:', data);
         this.messages = data || [];
-        this.scrollToBottom();
       }
     } catch (e) {
       console.error('Error inesperado:', e);
@@ -62,7 +66,6 @@ export class Tab1Page implements OnInit, OnDestroy {
           profiles: { display_name: displayName }
         };
         this.messages.push(newMsg);
-        this.scrollToBottom();
       })
       .subscribe();
   }
@@ -73,6 +76,7 @@ export class Tab1Page implements OnInit, OnDestroy {
     const messageContent = this.newMessage;
     this.newMessage = ''; 
 
+    console.log('Enviando mensaje:', messageContent);
     const { error } = await this.supabase.client
       .from('messages')
       .insert({
@@ -84,13 +88,6 @@ export class Tab1Page implements OnInit, OnDestroy {
       console.error('Error enviando:', error);
       this.newMessage = messageContent; 
     }
-  }
-
-  scrollToBottom() {
-    setTimeout(() => {
-      const content = document.querySelector('ion-content');
-      if (content) content.scrollToBottom(300);
-    }, 100);
   }
 
   ngOnDestroy() {
