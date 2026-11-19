@@ -5,7 +5,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <ion-button expand="block" color="danger" (click)="logout()">
+  <div style="text-align: center; margin-top: 2rem;">
+    <ion-icon name="person-circle" style="font-size: 6rem; color: var(--ion-color-primary);"></ion-icon>
+    <h2>Mi Cuenta</h2>
+    <p style="color: gray;">Sesión iniciada correctamente</p>
+  </div>
+
+  <ion-button expand="block" color="danger" (click)="logout()" style="margin-top: 3rem;">
     <ion-icon slot="start" name="log-out"></ion-icon>
     Cerrar Sesión
   </ion-button>
