@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import {
   RouteReuseStrategy,
   provideRouter,
@@ -10,6 +11,9 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
+
+// Inicializar PWA Elements (necesario para usar la cámara en el navegador)
+defineCustomElements(window);
 
 bootstrapApplication(AppComponent, {
   providers: [

@@ -56,11 +56,11 @@ export class Tab1Page implements OnInit, OnDestroy {
         const displayName = senderId === 'usuario-prueba-123' ? 'Usuario de Prueba' : 'Usuario';
         
         this.messages.push({ ...payload.new, profiles: { display_name: displayName } });
+        this.scrollToBottom();
       })
       .subscribe();
   }
 
-  // --- LÓGICA DE "ESCRIBIENDO..." ---
   setupPresence() {
     this.presenceChannel = this.supabase.client.channel('room_typing', {
       config: { presence: { key: this.currentUserId } },
@@ -87,7 +87,6 @@ export class Tab1Page implements OnInit, OnDestroy {
     }, 2000); 
   }
 
-  // --- LÓGICA DE ENVÍO DE TEXTO ---
   async sendMessage() {
     if (!this.newMessage.trim()) return;
     const content = this.newMessage;
@@ -101,7 +100,6 @@ export class Tab1Page implements OnInit, OnDestroy {
     });
   }
 
-  // --- LÓGICA DE ARCHIVOS Y MULTIMEDIA ---
   async openAttachments() {
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Adjuntar',
@@ -130,7 +128,7 @@ export class Tab1Page implements OnInit, OnDestroy {
       const fileName = `img_${Date.now()}.jpeg`;
       const base64Data = image.base64String as string;
       
-      const { data, error } = await this.supabase.client.storage
+      const { error } = await this.supabase.client.storage
         .from('chat-files')
         .upload(fileName, this.base64ToBlob(base64Data, 'image/jpeg'));
 
@@ -148,11 +146,11 @@ export class Tab1Page implements OnInit, OnDestroy {
       await loading.dismiss();
     } catch (e) {
       console.error('Error con imagen', e);
+      this.showError('No se pudo subir la imagen.');
     }
   }
 
   async pickDocument() {
-    // CORRECCIÓN: Usamos window.document para evitar el choque de nombres con la variable 'document' importada de ionicons
     const fileInput = window.document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.pdf,.txt,.doc,.docx';
@@ -174,6 +172,9 @@ export class Tab1Page implements OnInit, OnDestroy {
           message_type: 'file',
           media_url: urlData.publicUrl
         });
+      } else {
+        console.error('Error subiendo archivo:', error);
+        this.showError('No se pudo subir el archivo.');
       }
       await loading.dismiss();
     };
@@ -182,7 +183,11 @@ export class Tab1Page implements OnInit, OnDestroy {
 
   async shareLocation() {
     try {
+      const loading = await this.loadingCtrl.create({ message: 'Obteniendo ubicación...' });
+      await loading.present();
+      
       const coordinates = await Geolocation.getCurrentPosition();
+      await loading.dismiss();
       
       await this.supabase.client.from('messages').insert({
         content: 'Ubicación compartida',
@@ -192,12 +197,8 @@ export class Tab1Page implements OnInit, OnDestroy {
         lng: coordinates.coords.longitude
       });
     } catch (e) {
-      const alert = await this.alertCtrl.create({
-        header: 'Error',
-        message: 'No se pudo obtener la ubicación.',
-        buttons: ['OK']
-      });
-      await alert.present();
+      console.error(e);
+      this.showError('No se pudo obtener la ubicación. Asegúrate de dar permisos al navegador.');
     }
   }
 
@@ -214,6 +215,23 @@ export class Tab1Page implements OnInit, OnDestroy {
       byteArrays.push(byteArray);
     }
     return new Blob(byteArrays, { type: contentType });
+  }
+
+  async showError(message: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Error',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      // CORRECCIÓN AQUÍ: Usar window.document
+      const content = window.document.querySelector('ion-content');
+      if (content) content.scrollToBottom(300);
+    }, 100);
   }
 
   ngOnDestroy() {
