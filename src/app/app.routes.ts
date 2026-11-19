@@ -3,7 +3,7 @@ import type { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'tabs/tab1', // <-- Cambiado para que inicie directo en el chat
     pathMatch: 'full',
   },
   {
@@ -20,6 +20,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'login',
+    redirectTo: 'tabs/tab1', // <-- Si ponen una ruta que no existe, también van al chat
   }
 ];

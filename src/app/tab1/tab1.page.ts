@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { send, personCircle } from 'ionicons/icons';
-import { Firebase } from '../services/firebase';
 
 @Component({
   selector: 'app-tab1',
@@ -15,39 +14,39 @@ import { Firebase } from '../services/firebase';
 })
 export class Tab1Page implements OnInit, OnDestroy {
   private supabase = inject(SupabaseService);
-  private firebase = inject(Firebase);
   
   messages: any[] = [];
   newMessage = '';
   channel: any;
-  currentUserId: string | null = null;
+  currentUserId = 'usuario-prueba-123'; 
 
   constructor() {
     addIcons({ send, personCircle });
   }
 
   async ngOnInit() {
-    this.currentUserId = this.firebase.auth.currentUser?.uid || null;
+    console.log('1. Iniciando Tab1Page');
     await this.loadMessages();
     this.subscribeToMessages();
   }
 
   async loadMessages() {
-    const { data, error } = await this.supabase.client
-      .from('messages')
-      .select(`
-        id,
-        content,
-        created_at,
-        sender_id,
-        profiles ( display_name )
-      `)
-      .order('created_at', { ascending: true });
+    console.log('2. Consultando Supabase...');
+    try {
+      const { data, error } = await this.supabase.client
+        .from('messages')
+        .select(`id, content, created_at, sender_id, profiles ( display_name )`)
+        .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Error cargando mensajes', error);
-    } else {
-      this.messages = data || [];
+      if (error) {
+        console.error('Error en Supabase:', error);
+      } else {
+        console.log('Mensajes obtenidos:', data);
+        this.messages = data || [];
+        this.scrollToBottom();
+      }
+    } catch (e) {
+      console.error('Error inesperado:', e);
     }
   }
 
@@ -55,18 +54,12 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.channel = this.supabase.client
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
-        // Corrección: Usar corchetes para evitar error de TypeScript estricto
         const senderId = payload.new['sender_id'];
+        let displayName = senderId === 'usuario-prueba-123' ? 'Usuario de Prueba' : 'Usuario';
         
-        const { data } = await this.supabase.client
-          .from('profiles')
-          .select('display_name')
-          .eq('id', senderId)
-          .single();
-          
         const newMsg = {
           ...payload.new,
-          profiles: { display_name: data?.display_name || 'Usuario' }
+          profiles: { display_name: displayName }
         };
         this.messages.push(newMsg);
         this.scrollToBottom();
@@ -75,10 +68,10 @@ export class Tab1Page implements OnInit, OnDestroy {
   }
 
   async sendMessage() {
-    if (!this.newMessage.trim() || !this.currentUserId) return;
+    if (!this.newMessage.trim()) return;
 
     const messageContent = this.newMessage;
-    this.newMessage = ''; // Limpiar input inmediatamente
+    this.newMessage = ''; 
 
     const { error } = await this.supabase.client
       .from('messages')
@@ -88,8 +81,8 @@ export class Tab1Page implements OnInit, OnDestroy {
       });
 
     if (error) {
-      console.error('Error enviando mensajes', error);
-      this.newMessage = messageContent; // Devolver el texto si falla
+      console.error('Error enviando:', error);
+      this.newMessage = messageContent; 
     }
   }
 

@@ -1,18 +1,8 @@
-import { Component, DestroyRef, inject, type OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonSpinner,
-  IonText,
-  IonTitle,
-  IonToolbar,
+  IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonSpinner, IonText, IonTitle, IonToolbar,
 } from '@ionic/angular';
 
 import { AuthService } from '../../services/auth.service';
@@ -22,25 +12,13 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
   imports: [
-    IonButton,
-    IonContent,
-    IonHeader,
-    IonInput,
-    IonItem,
-    IonLabel,
-    IonSpinner,
-    IonText,
-    IonTitle,
-    IonToolbar,
-    ReactiveFormsModule,
-    RouterLink,
+    IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonSpinner, IonText, IonTitle, IonToolbar, ReactiveFormsModule, RouterLink,
   ],
 })
-export class RegistroPage implements OnInit {
+export class RegistroPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -50,22 +28,6 @@ export class RegistroPage implements OnInit {
 
   loading = false;
   errorMessage = '';
-
-  ngOnInit(): void {
-    this.auth
-      .observeAuthState()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (user) => {
-          if (user) {
-            void this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
-          }
-        },
-        error: () => {
-          this.errorMessage = 'No se pudo comprobar el estado de la sesión.';
-        },
-      });
-  }
 
   get passwordsMatch(): boolean {
     const confirmation = this.form.controls.confirmPassword.value;
@@ -84,6 +46,7 @@ export class RegistroPage implements OnInit {
     try {
       const { email, password } = this.form.getRawValue();
       await this.auth.register(email, password);
+      // Navegamos DIRECTAMENTE aquí
       await this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
     } catch (error: unknown) {
       this.errorMessage = this.getErrorMessage(error);
@@ -93,11 +56,7 @@ export class RegistroPage implements OnInit {
   }
 
   private getErrorMessage(error: unknown): string {
-    const code =
-      typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string'
-        ? error.code
-        : undefined;
-
+    const code = typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string' ? error.code : undefined;
     switch (code) {
       case 'auth/email-already-in-use':
         return 'Ya existe una cuenta con ese correo electrónico.';
