@@ -8,6 +8,7 @@ export class SupabaseService {
   public readonly client: SupabaseClient;
 
   constructor() {
+    // Cliente simple usando la clave anon
     this.client = createClient(environment.supabase.url, environment.supabase.anonKey);
   }
 }

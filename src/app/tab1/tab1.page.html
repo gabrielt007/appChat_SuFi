@@ -5,18 +5,35 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <p style="color: green; text-align: center;">¡Componente cargado!</p>
-  
-  @if (messages.length === 0) {
-    <p style="text-align: center; color: gray;">No hay mensajes aún.</p>
+  @if (typingUser) {
+    <p style="font-size: 0.8rem; color: gray; font-style: italic;">{{ typingUser }} está escribiendo...</p>
   }
-  
+
   <ion-list lines="none">
     @for (msg of messages; track msg.id) {
       <ion-item [class.my-message]="msg.sender_id === currentUserId">
         <ion-label class="ion-text-wrap">
-          <h2 class="sender-name">{{ msg.profiles?.display_name || 'Usuario' }}</h2>
-          <p class="message-text">{{ msg.content }}</p>
+          @if (msg.sender_id !== currentUserId) {
+            <h2 class="sender-name">{{ msg.profiles?.display_name || 'Usuario' }}</h2>
+          }
+          
+          <!-- Renderizado condicional según el tipo de mensaje -->
+          @if (msg.message_type === 'text') {
+            <p class="message-text">{{ msg.content }}</p>
+          }
+          @if (msg.message_type === 'image') {
+            <img [src]="msg.media_url" style="max-width: 100%; border-radius: 8px; margin-top: 5px;" />
+          }
+          @if (msg.message_type === 'file') {
+            <a [href]="msg.media_url" target="_blank" style="display: flex; align-items: center; gap: 5px; text-decoration: none; color: blue;">
+              📄 Descargar archivo
+            </a>
+          }
+          @if (msg.message_type === 'location') {
+            <a [href]="'https://maps.google.com/?q=' + msg.lat + ',' + msg.lng" target="_blank" style="display: flex; align-items: center; gap: 5px; text-decoration: none; color: green;">
+              📍 Ver ubicación compartida
+            </a>
+          }
         </ion-label>
       </ion-item>
     }
@@ -26,7 +43,18 @@
 <ion-footer>
   <ion-toolbar>
     <ion-item lines="none">
-      <ion-input [(ngModel)]="newMessage" placeholder="Escribe un mensaje..." (keyup.enter)="sendMessage()"></ion-input>
+      <!-- Botón para abrir el menú de archivos -->
+      <ion-button fill="clear" (click)="openAttachments()">
+        <ion-icon name="add-circle" size="large"></ion-icon>
+      </ion-button>
+
+      <ion-input 
+        [(ngModel)]="newMessage" 
+        placeholder="Escribe un mensaje..." 
+        (keyup.enter)="sendMessage()"
+        (ionInput)="onTyping()">
+      </ion-input>
+      
       <ion-button fill="clear" (click)="sendMessage()" [disabled]="!newMessage.trim()">
         <ion-icon name="send"></ion-icon>
       </ion-button>

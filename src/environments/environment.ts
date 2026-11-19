@@ -15,7 +15,8 @@ export const environment = {
   },
   supabase: {
     url: 'https://gckmkdgrkpwdcldakiib.supabase.co', 
-    anonKey: 'sb_publishable_H1dz7-ZCMJFx3JlJcG6JEg_YOoBOCN3Y'
+    // Usar la clave anon legacy
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdja21rZGdya3B3ZGNsZGFraWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMjk5MjEsImV4cCI6MjExMDYwNTkyMX0.RmbhL0lWQMWnQ5_l2VvyGJJWVodAx6p-2jHdXfGr704'
   }
 };
 
