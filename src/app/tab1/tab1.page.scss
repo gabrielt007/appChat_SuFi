@@ -1,0 +1,37 @@
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 8px;
+}
+
+ion-label {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--ion-color-light);
+  max-width: 80%;
+}
+
+.my-message ion-label {
+  background: var(--ion-color-primary);
+  color: white;
+  margin-left: auto; /* Alinea a la derecha */
+}
+
+.sender-name {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--ion-color-medium);
+  margin-bottom: 4px;
+}
+
+.message-text {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.message-time {
+  font-size: 0.65rem;
+  text-align: right;
+  margin-top: 4px;
+  opacity: 0.7;
+}

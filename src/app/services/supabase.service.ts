@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Auth } from '@angular/fire/auth'; // Nota: Usamos la instancia de Firebase que creó tu compañero
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+
 import { environment } from '../../environments/environment';
-import { Firebase } from './firebase'; // Asumiendo que tu compañero mantuvo este archivo
+import { Firebase } from './firebase';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
@@ -10,31 +10,15 @@ export class SupabaseService {
   private readonly firebase = inject(Firebase);
 
   constructor() {
-    this.client = createClient(environment.supabase.url, environment.supabase.anonKey);
-  }
-
-  // Esta función le dice a Supabase quién es el usuario conectado
-  async setSession(): Promise<void> {
-    const user = this.firebase.auth.currentUser;
-    if (!user) {
-      console.warn('No hay usuario de Firebase logueado');
-      return;
-    }
-
-    try {
-      // Obtenemos el token JWT de Firebase
-      const token = await user.getIdToken();
-      
-      // Se lo pasamos a Supabase
-      const { error } = await this.client.auth.setSession({
-        access_token: token,
-        refresh_token: '',
-      });
-      
-      if (error) throw error;
-      console.log('Sesión de Supabase vinculada correctamente con Firebase');
-    } catch (error) {
-      console.error('Error vinculando sesión con Supabase:', error);
-    }
+    this.client = createClient(environment.supabase.url, environment.supabase.anonKey, {
+      accessToken: async () => {
+        const user = this.firebase.auth.currentUser;
+        if (!user) return null;
+        
+        // IMPORTANTE: Usar 'false' para NO forzar la actualización aquí.
+        // Forzar la actualización dentro de este callback causa el bloqueo.
+        return await user.getIdToken(false);
+      }
+    });
   }
 }

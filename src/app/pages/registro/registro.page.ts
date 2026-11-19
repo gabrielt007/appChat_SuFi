@@ -58,7 +58,7 @@ export class RegistroPage implements OnInit {
       .subscribe({
         next: (user) => {
           if (user) {
-            void this.router.navigateByUrl('/chat', { replaceUrl: true });
+            void this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
           }
         },
         error: () => {
@@ -84,7 +84,7 @@ export class RegistroPage implements OnInit {
     try {
       const { email, password } = this.form.getRawValue();
       await this.auth.register(email, password);
-      await this.router.navigateByUrl('/chat', { replaceUrl: true });
+      await this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
     } catch (error: unknown) {
       this.errorMessage = this.getErrorMessage(error);
     } finally {

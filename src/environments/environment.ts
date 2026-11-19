@@ -14,8 +14,8 @@ export const environment = {
     measurementId: "G-K82J2G7Y66"
   },
   supabase: {
-    url: 'TU_SUPABASE_URL', 
-    anonKey: 'TU_ANON_KEY'
+    url: 'https://gckmkdgrkpwdcldakiib.supabase.co', 
+    anonKey: 'sb_publishable_H1dz7-ZCMJFx3JlJcG6JEg_YOoBOCN3Y'
   }
 };
 

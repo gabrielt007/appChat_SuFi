@@ -5,14 +5,15 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <ion-list>
+  <ion-list lines="none">
     @for (msg of messages; track msg.id) {
-      <ion-item [color]="msg.sender_id === currentUserId ? 'light' : ''">
-        <ion-icon slot="start" name="person-circle" size="large"></ion-icon>
+      <ion-item [class.my-message]="msg.sender_id === currentUserId">
         <ion-label class="ion-text-wrap">
-          <h2><strong>{{ msg.profiles?.display_name || 'Usuario' }}</strong></h2>
-          <p>{{ msg.content }}</p>
-          <p style="font-size: 0.7rem; color: gray;">{{ msg.created_at | date:'shortTime' }}</p>
+          @if (msg.sender_id !== currentUserId) {
+            <h2 class="sender-name">{{ msg.profiles?.display_name || 'Usuario' }}</h2>
+          }
+          <p class="message-text">{{ msg.content }}</p>
+          <p class="message-time">{{ msg.created_at | date:'shortTime' }}</p>
         </ion-label>
       </ion-item>
     }

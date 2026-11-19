@@ -55,11 +55,13 @@ export class Tab1Page implements OnInit, OnDestroy {
     this.channel = this.supabase.client
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
-        // Cuando llega un mensaje nuevo, buscamos el nombre del autor para mostrarlo
+        // Corrección: Usar corchetes para evitar error de TypeScript estricto
+        const senderId = payload.new['sender_id'];
+        
         const { data } = await this.supabase.client
           .from('profiles')
           .select('display_name')
-          .eq('id', payload.new.sender_id)
+          .eq('id', senderId)
           .single();
           
         const newMsg = {
@@ -86,7 +88,7 @@ export class Tab1Page implements OnInit, OnDestroy {
       });
 
     if (error) {
-      console.error('Error enviando mensaje', error);
+      console.error('Error enviando mensajes', error);
       this.newMessage = messageContent; // Devolver el texto si falla
     }
   }

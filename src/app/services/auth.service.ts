@@ -22,26 +22,25 @@ export class AuthService {
     const credential = await createUserWithEmailAndPassword(this.firebase.auth, email, password);
     const username = email.split('@')[0] || 'usuario';
 
-    // 1. Conectar la sesión con Supabase
-    await this.supabase.setSession();
+    // FORZAR la actualización del token para que incluya el claim 'role: authenticated'
+    // Esto es crucial para que Supabase acepte al usuario.
+    await credential.user.getIdToken(true);
 
-    // 2. Crear el perfil en Supabase
+    // Crear el perfil en Supabase
     await this.createSupabaseProfile(credential.user.uid, email, username);
+    
     return credential.user;
   }
 
   async login(email: string, password: string): Promise<User> {
     const credential = await signInWithEmailAndPassword(this.firebase.auth, email, password);
-    
-    // Conectar la sesión con Supabase
-    await this.supabase.setSession();
+    // Forzamos la actualización del token también en el login para asegurar que el claim esté presente
+    await credential.user.getIdToken(true);
     return credential.user;
   }
 
   async logout(): Promise<void> {
     await signOut(this.firebase.auth);
-    // Cerramos sesión en Supabase también
-    await this.supabase.client.auth.signOut();
     await this.router.navigateByUrl('/login', { replaceUrl: true });
   }
 
@@ -58,7 +57,6 @@ export class AuthService {
   }
 
   private async createSupabaseProfile(uid: string, email: string, username: string): Promise<void> {
-    // Usamos upsert para evitar errores si el perfil ya existe
     const { error } = await this.supabase.client
       .from('profiles')
       .upsert({
