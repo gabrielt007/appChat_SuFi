@@ -167,4 +167,25 @@ Permisos necesarios en `AndroidManifest.xml`: cámara, ubicación (`ACCESS_FINE_
 
 
 
+## Capturas de pantalla
 
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/42f59580-92a1-43d5-aca2-f58985ff0513" width="300" alt="Imagen 1" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/c436b86f-b1aa-4789-96dc-b5d2fa01be25" width="300" alt="Imagen 2" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/b8e742c0-76b9-453b-820a-525347978436" width="300" alt="Imagen 3" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/d73400b0-c0d0-4a24-9e07-065176c7554c" width="300" alt="Imagen 4" />
+    </td>
+  </tr>
+</table>
+
+---
